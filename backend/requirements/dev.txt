@@ -1,0 +1,8 @@
+-r base.txt
+
+# Local development tooling
+pytest
+pytest-django
+factory-boy
+ipython
+django-debug-toolbar

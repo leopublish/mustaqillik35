@@ -1,0 +1,1352 @@
+/* ═══════════════════════════════════════════════════════════════════
+   O'ZBEKISTON MUSTAQILLIGINING 35 YILLIGI — DESIGN ENHANCEMENTS
+   Palette: White · Navy #08203a · Azure #0c5b84 · Emerald #0f6b63 · Gold #b8960c
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ──────────────────────────────────────────────────────────────
+   1. CUSTOM PROPERTIES — EXTENDED
+────────────────────────────────────────────────────────────── */
+:root {
+  --gold:          #b8960c;
+  --gold-light:    #d4ae3b;
+  --gold-pale:     rgba(184, 150, 12, 0.10);
+  --gold-glow:     rgba(184, 150, 12, 0.28);
+  --azure-glow:    rgba(12, 91, 132, 0.18);
+  --emerald-glow:  rgba(15, 107, 99, 0.18);
+  --navy-glow:     rgba(8, 32, 58, 0.22);
+  --shadow-lift:   0 16px 48px rgba(8, 32, 58, 0.14);
+  --shadow-gold:   0 8px 32px rgba(184, 150, 12, 0.20);
+  --t-fast:   160ms cubic-bezier(.4,0,.2,1);
+  --t-med:    280ms cubic-bezier(.4,0,.2,1);
+  --t-slow:   520ms cubic-bezier(.4,0,.2,1);
+  --radius-card: 14px;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   2. SCROLL PROGRESS BAR (gold → azure → emerald gradient)
+────────────────────────────────────────────────────────────── */
+#scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, #b8960c 0%, #0c5b84 55%, #0f6b63 100%);
+  z-index: 9999;
+  transition: width 60ms linear;
+  pointer-events: none;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   3. GLOBAL KEYFRAMES
+────────────────────────────────────────────────────────────── */
+@keyframes shimmer {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%);  }
+}
+
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes goldPulse {
+  0%,100% { box-shadow: 0 0 0 0 var(--gold-glow); }
+  50%      { box-shadow: 0 0 0 8px transparent;    }
+}
+
+@keyframes floatUp {
+  0%   { transform: translateY(0)   rotate(0deg);   opacity: 0.7; }
+  100% { transform: translateY(-80px) rotate(20deg); opacity: 0;   }
+}
+
+@keyframes presSlideIn {
+  from { opacity: 0; transform: translateY(36px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   4. PRESENTATION STRIP — CROSSFADE + DRAMA
+────────────────────────────────────────────────────────────── */
+
+/* Top accent stripe above slider */
+.presentation-strip {
+  position: relative;
+}
+.presentation-strip::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg,
+    var(--deep, #08203a) 0%,
+    var(--azure, #0c5b84) 35%,
+    var(--gold) 55%,
+    var(--emerald, #0f6b63) 80%,
+    var(--deep, #08203a) 100%
+  );
+  z-index: 30;
+}
+
+/* Crossfade: all slides stack, toggle via opacity */
+.pres-slide {
+  display: block !important;
+  position: absolute !important;
+  inset: 0;
+  opacity: 0;
+  transition: opacity var(--t-slow);
+  pointer-events: none;
+}
+.pres-slide.is-active {
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 2;
+}
+
+/* Stronger overlay — ensures text readability over any photo */
+.presentation-strip__media::after {
+  background: linear-gradient(
+    115deg,
+    rgba(3, 10, 22, 0.98) 0%,
+    rgba(6, 22, 46, 0.97) 35%,
+    rgba(8, 32, 58, 0.93) 65%,
+    rgba(5, 20, 42, 0.88) 100%
+  ) !important;
+}
+
+/* Golden border frame — dark tint + blue ambient glow for legibility */
+.presentation-strip__frame {
+  border: 1px solid rgba(184, 150, 12, 0.45) !important;
+  background: rgba(5, 15, 30, 0.55) !important;
+  backdrop-filter: none !important;
+  box-shadow: 0 0 60px rgba(12, 91, 132, 0.25) inset !important;
+  padding-bottom: 52px !important;
+}
+
+/* ── HERO TITLE: smaller, gradient shimmer white→sky-blue ── */
+.presentation-strip__title {
+  /* Override the 120px behemoth */
+  font-size: clamp(1.8rem, 4.5vw, 3.6rem) !important;
+  line-height: 1.10 !important;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  max-width: 22ch;
+  /* Shimmering white → azure gradient text */
+  background: linear-gradient(
+    135deg,
+    #ffffff      0%,
+    #b8e4ff     28%,
+    #6ec6f5     52%,
+    #ffffff     72%,
+    #b8e4ff    100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: titleShimmer 5s linear infinite !important;
+  /* Soft glow text shadow via filter */
+  filter: drop-shadow(0 2px 18px rgba(12, 91, 132, 0.55));
+}
+
+/* Fallback for browsers without -webkit-text-fill-color support */
+@supports not (-webkit-text-fill-color: transparent) {
+  .presentation-strip__title {
+    color: #fff;
+    text-shadow: 0 2px 24px rgba(12, 91, 132, 0.7), 0 1px 3px rgba(0,0,0,0.8);
+  }
+}
+
+@keyframes titleShimmer {
+  0%   { background-position: 200% center; }
+  100% { background-position:   0% center; }
+}
+
+/* Eyebrow: gold, uppercase */
+.presentation-strip__eyebrow {
+  color: var(--gold-light, #d4ae3b) !important;
+  letter-spacing: 0.20em !important;
+  font-size: 0.75rem !important;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.6);
+}
+
+/* Lead text: crisp white with readable shadow */
+.presentation-strip__lead {
+  color: rgba(255,255,255,0.93) !important;
+  text-shadow: 0 1px 10px rgba(0,0,0,0.65);
+  font-size: clamp(0.92rem, 1.8vw, 1.15rem) !important;
+  max-width: 52ch !important;
+}
+
+/* Animate title and text when slide becomes active */
+.pres-slide.is-active .presentation-strip__title {
+  animation: titleShimmer 5s linear infinite, presSlideIn 0.75s cubic-bezier(.22,1,.36,1) forwards !important;
+}
+.pres-slide.is-active .presentation-strip__lead {
+  animation: presSlideIn 0.75s 0.12s cubic-bezier(.22,1,.36,1) both;
+}
+.pres-slide.is-active .minimal-hero__cta {
+  animation: presSlideIn 0.75s 0.22s cubic-bezier(.22,1,.36,1) both;
+}
+
+/* Slider arrows — gold on hover */
+.pres-arrow {
+  background: rgba(8, 32, 58, 0.52) !important;
+  border: 1px solid rgba(184, 150, 12, 0.35) !important;
+  transition: background var(--t-fast), border-color var(--t-fast), transform var(--t-fast) !important;
+  backdrop-filter: blur(6px);
+}
+.pres-arrow:hover {
+  background: rgba(184, 150, 12, 0.75) !important;
+  border-color: var(--gold) !important;
+  transform: translateY(-50%) scale(1.12) !important;
+}
+
+/* Dots */
+.pres-dots { gap: 12px !important; }
+.pres-dot {
+  transition: background var(--t-med), transform var(--t-med), box-shadow var(--t-med) !important;
+  cursor: pointer;
+}
+.pres-dot.is-active {
+  background: var(--gold) !important;
+  border-color: var(--gold-light) !important;
+  transform: scale(1.45) !important;
+  box-shadow: 0 0 10px var(--gold-glow) !important;
+}
+
+/* CTA button on hero: shimmer on hover */
+.minimal-hero__cta {
+  background: linear-gradient(135deg, #0a4d6f, var(--azure, #0c5b84)) !important;
+  box-shadow: 0 10px 28px rgba(12, 91, 132, 0.38) !important;
+  letter-spacing: 0.03em;
+  overflow: hidden;
+  position: relative;
+}
+.minimal-hero__cta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg,
+    transparent 35%,
+    rgba(255,255,255,0.22) 50%,
+    transparent 65%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.55s ease;
+}
+.minimal-hero__cta:hover::before {
+  transform: translateX(100%);
+}
+.minimal-hero__cta:hover {
+  box-shadow: 0 16px 40px rgba(12, 91, 132, 0.46) !important;
+  transform: translateY(-2px) scale(1.01) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   5. HEADER / NAVIGATION
+────────────────────────────────────────────────────────────── */
+.header-nav-bar {
+  box-shadow: 0 4px 28px rgba(8, 32, 58, 0.55) !important;
+}
+
+.nav-link {
+  transition: color var(--t-fast), background var(--t-fast), letter-spacing var(--t-fast) !important;
+  letter-spacing: 0.04em;
+  position: relative;
+}
+.nav-link::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  right: 50%;
+  height: 3px;
+  background: var(--gold);
+  transition: left var(--t-med), right var(--t-med);
+  border-radius: 3px 3px 0 0;
+}
+.nav-link:hover::before {
+  left: 0;
+  right: 0;
+}
+.nav-link.is-active::before {
+  left: 0;
+  right: 0;
+}
+.nav-link.is-active {
+  color: #fff !important;
+  background: rgba(255,255,255,0.09) !important;
+  border-bottom: none !important;
+}
+
+/* Locale dropdown trigger */
+.locale-dropdown__trigger {
+  transition: background var(--t-fast), border-color var(--t-fast) !important;
+}
+.locale-dropdown__trigger:hover,
+.locale-dropdown.is-open .locale-dropdown__trigger {
+  border-color: var(--gold) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   6. MINIMAL HIGHLIGHT CARDS (Homepage stat cards)
+────────────────────────────────────────────────────────────── */
+.minimal-card {
+  transition: transform var(--t-med), box-shadow var(--t-med), border-color var(--t-med) !important;
+  border-top: 3px solid transparent !important;
+  border-radius: var(--radius-card) !important;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 0 0 1px rgba(12, 91, 132, 0.18), 0 0 16px rgba(12, 91, 132, 0.15) !important;
+}
+.minimal-card.is-azure  { border-top-color: var(--azure, #0c5b84) !important; }
+.minimal-card.is-emerald{ border-top-color: var(--emerald, #0f6b63) !important; }
+
+.minimal-card:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 0 0 1px rgba(12, 91, 132, 0.30), 0 0 32px rgba(12, 91, 132, 0.40), 0 8px 28px rgba(8, 32, 58, 0.20) !important;
+  border-top-color: var(--gold) !important;
+}
+
+.minimal-card__value {
+  background: linear-gradient(135deg, var(--deep, #08203a), var(--azure, #0c5b84));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.minimal-card.is-emerald .minimal-card__value {
+  background: linear-gradient(135deg, var(--deep, #08203a), var(--emerald, #0f6b63));
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.minimal-card__icon {
+  transition: transform var(--t-med), background var(--t-med) !important;
+}
+.minimal-card:hover .minimal-card__icon {
+  transform: scale(1.18) rotate(-4deg);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   7. QUICK ACTION CARDS (Homepage)
+────────────────────────────────────────────────────────────── */
+.minimal-action {
+  transition: transform var(--t-med), box-shadow var(--t-med), border-color var(--t-med), border-left-color var(--t-med) !important;
+  border-left: 4px solid transparent !important;
+  border-radius: var(--radius-card) !important;
+  box-shadow: 0 0 0 1px rgba(12, 91, 132, 0.15), 0 0 14px rgba(12, 91, 132, 0.12) !important;
+}
+.minimal-action:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 0 0 1px rgba(12, 91, 132, 0.28), 0 0 28px rgba(12, 91, 132, 0.38), 0 8px 24px rgba(8, 32, 58, 0.18) !important;
+  border-left-color: var(--azure, #0c5b84) !important;
+}
+.minimal-action__icon {
+  transition: background var(--t-med), color var(--t-med), transform var(--t-med) !important;
+}
+.minimal-action:hover .minimal-action__icon {
+  background: linear-gradient(135deg, var(--azure, #0c5b84), var(--emerald, #0f6b63)) !important;
+  color: #fff !important;
+  transform: scale(1.1);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   8. SECTION HEADINGS — GOLD ACCENT
+────────────────────────────────────────────────────────────── */
+.section-kicker,
+.hero-kicker,
+.card-kicker {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px;
+}
+.section-kicker::before,
+.hero-kicker::before,
+.card-kicker::before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 2px;
+  background: var(--gold);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.section-heading h2 {
+  position: relative;
+}
+.section-heading h2::after {
+  content: "";
+  display: block;
+  height: 3px;
+  width: 52px;
+  margin-top: 8px;
+  background: linear-gradient(90deg, var(--gold), var(--azure, #0c5b84));
+  border-radius: 3px;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   9. GENERIC CARDS — HOVER LIFT
+────────────────────────────────────────────────────────────── */
+.card,
+.panel,
+.result-card,
+.navigation-card {
+  transition: transform var(--t-med), box-shadow var(--t-med), border-color var(--t-med) !important;
+  border-radius: var(--radius-card) !important;
+}
+.card:hover,
+.result-card:hover,
+.navigation-card:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: var(--shadow-lift) !important;
+  border-color: rgba(12, 91, 132, 0.18) !important;
+}
+
+/* Color-themed cards: shimmer gleam on hover */
+.feature-card,
+.detail-hero {
+  overflow: hidden;
+  position: relative;
+}
+.feature-card::after,
+.detail-hero::after {
+  content: "";
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    rgba(255,255,255,0.07) 50%,
+    transparent 65%
+  );
+  transition: left 0.6s ease;
+  pointer-events: none;
+}
+.feature-card:hover::after,
+.detail-hero:hover::after {
+  left: 140%;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   10. STAT CARDS — GRADIENT VALUE TEXT
+────────────────────────────────────────────────────────────── */
+.stat-card {
+  transition: background var(--t-med), transform var(--t-med) !important;
+  border-radius: var(--radius-card) !important;
+}
+.stat-card:hover {
+  background: rgba(10, 47, 104, 0.08) !important;
+  transform: translateY(-3px) !important;
+}
+.stat-card strong {
+  background: linear-gradient(135deg, var(--deep, #08203a), var(--azure, #0c5b84));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   11. TIMELINE
+────────────────────────────────────────────────────────────── */
+.timeline-card {
+  transition: transform var(--t-med), box-shadow var(--t-med) !important;
+  border-radius: var(--radius-card) !important;
+  border-top: 3px solid var(--gold-pale) !important;
+}
+.timeline-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: var(--shadow-lift) !important;
+  border-top-color: var(--gold) !important;
+}
+.timeline-year {
+  font-size: 0.78rem !important;
+  letter-spacing: 0.16em;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--gold-pale);
+  color: #8d6530;
+  display: inline-block;
+}
+.timeline-item {
+  transition: border-left-color var(--t-fast), background var(--t-fast) !important;
+}
+.timeline-item:hover {
+  border-left-color: var(--azure, #0c5b84) !important;
+  background: rgba(8, 32, 58, 0.05) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   12. BUTTONS — SHIMMER + GLOW
+────────────────────────────────────────────────────────────── */
+.button {
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--t-fast), box-shadow var(--t-fast), background var(--t-fast) !important;
+}
+.button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    rgba(255,255,255,0.20) 50%,
+    transparent 65%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+  pointer-events: none;
+}
+.button:hover::after {
+  transform: translateX(100%);
+}
+.button:hover {
+  box-shadow: 0 14px 36px rgba(8, 32, 58, 0.30) !important;
+  transform: translateY(-2px) !important;
+}
+.button-secondary {
+  transition: transform var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast) !important;
+}
+.button-secondary:hover {
+  border-color: rgba(12, 91, 132, 0.38) !important;
+  box-shadow: 0 6px 18px rgba(8, 32, 58, 0.10) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   13. TEXT LINKS — ARROW ANIMATION
+────────────────────────────────────────────────────────────── */
+.text-link,
+.section-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  transition: gap var(--t-fast), color var(--t-fast) !important;
+}
+.text-link::after,
+.section-link::after {
+  content: "→";
+  font-size: 0.88em;
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: opacity var(--t-fast), transform var(--t-fast);
+  display: inline-block;
+}
+.text-link:hover::after,
+.section-link:hover::after {
+  opacity: 1;
+  transform: translateX(0);
+}
+.text-link:hover,
+.section-link:hover {
+  gap: 7px;
+  color: var(--azure, #0c5b84) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   14. FILTER CHIPS
+────────────────────────────────────────────────────────────── */
+.chip {
+  transition: background var(--t-fast), color var(--t-fast), box-shadow var(--t-fast), border-color var(--t-fast) !important;
+  border: 1px solid transparent !important;
+  border-radius: 999px !important;
+}
+.chip:hover {
+  background: rgba(8, 32, 58, 0.10) !important;
+  border-color: rgba(12, 91, 132, 0.20) !important;
+}
+.chip.is-active {
+  background: linear-gradient(135deg, var(--deep, #08203a), var(--azure, #0c5b84)) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 16px rgba(8, 32, 58, 0.24) !important;
+  border-color: transparent !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   15. BADGES
+────────────────────────────────────────────────────────────── */
+.badge {
+  font-size: 0.72rem !important;
+  letter-spacing: 0.06em;
+  border-radius: 999px !important;
+}
+.badge-gold {
+  background: linear-gradient(
+    135deg,
+    rgba(181,138,63,0.16),
+    rgba(184,150,12,0.10)
+  ) !important;
+  color: #8d6530 !important;
+  border: 1px solid rgba(184,150,12,0.20) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   16. MINI CARDS (governance)
+────────────────────────────────────────────────────────────── */
+.mini-card {
+  transition: transform var(--t-med), box-shadow var(--t-med) !important;
+  border-radius: var(--radius-card) !important;
+}
+.mini-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 12px 32px rgba(8, 32, 58, 0.28) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   17. RELATED CARDS
+────────────────────────────────────────────────────────────── */
+.related-card {
+  transition: background var(--t-fast), transform var(--t-fast), border-left-color var(--t-fast) !important;
+  border-left: 3px solid transparent !important;
+  border-radius: 12px !important;
+}
+.related-card:hover {
+  background: rgba(8, 32, 58, 0.07) !important;
+  transform: translateX(5px) !important;
+  border-left-color: var(--azure, #0c5b84) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   18. SOCIAL CARDS
+────────────────────────────────────────────────────────────── */
+.social-card {
+  transition: background var(--t-med), transform var(--t-med), box-shadow var(--t-med) !important;
+  border: 1px solid rgba(8, 32, 58, 0.08) !important;
+  border-radius: var(--radius-card) !important;
+}
+.social-card:hover {
+  background: rgba(8, 32, 58, 0.10) !important;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 8px 20px rgba(8, 32, 58, 0.12) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   19. FORM FIELDS
+────────────────────────────────────────────────────────────── */
+.field input,
+.field select,
+.field textarea {
+  transition: border-color var(--t-fast), box-shadow var(--t-fast) !important;
+  border-radius: 10px !important;
+}
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--azure, #0c5b84) !important;
+  box-shadow: 0 0 0 4px var(--azure-glow) !important;
+}
+.field span {
+  color: var(--deep, #08203a);
+  font-size: 0.87rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   20. FOOTER — RICHER DARK GRADIENT + GOLD BORDER
+────────────────────────────────────────────────────────────── */
+.site-footer {
+  background: linear-gradient(
+    175deg,
+    rgba(8, 32, 58, 0.98) 0%,
+    rgba(5, 15, 28, 1.0) 100%
+  ) !important;
+  border-top: 3px solid var(--gold) !important;
+  padding-top: 50px !important;
+}
+.site-footer h3::after {
+  content: "";
+  display: block;
+  height: 2px;
+  width: 30px;
+  margin-top: 7px;
+  background: var(--gold);
+  border-radius: 2px;
+}
+.simple-link {
+  transition: color var(--t-fast), padding-left var(--t-fast) !important;
+  padding-left: 0 !important;
+}
+.simple-link:hover {
+  color: var(--gold-light) !important;
+  padding-left: 7px !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   21. PAGE HERO — GRADIENT BOTTOM LINE
+────────────────────────────────────────────────────────────── */
+.page-hero,
+.hero {
+  position: relative;
+}
+.page-hero::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg,
+    var(--azure, #0c5b84) 0%,
+    var(--gold) 50%,
+    var(--emerald, #0f6b63) 100%
+  );
+  opacity: 0.8;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   22. BLOCKQUOTE — GOLD LEFT BORDER
+────────────────────────────────────────────────────────────── */
+blockquote {
+  border-left: 4px solid var(--gold) !important;
+  background: rgba(184, 150, 12, 0.05) !important;
+  border-radius: 0 14px 14px 0 !important;
+  box-shadow: 0 4px 16px rgba(184, 150, 12, 0.08) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   23. FRAME CARDS (media detail)
+────────────────────────────────────────────────────────────── */
+.frame-card {
+  transition: transform var(--t-fast), box-shadow var(--t-fast) !important;
+  border-radius: 16px !important;
+}
+.frame-card:hover {
+  transform: scale(1.025) !important;
+  box-shadow: 0 10px 24px rgba(8, 32, 58, 0.22) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   24. APPEAL BOX — GOLD THEME
+────────────────────────────────────────────────────────────── */
+.appeal-box.theme-gold {
+  background: linear-gradient(135deg, #8d6530, #c39753) !important;
+  box-shadow: 0 8px 28px rgba(140, 100, 40, 0.28) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   25. BREADCRUMBS
+────────────────────────────────────────────────────────────── */
+.breadcrumbs a {
+  transition: color var(--t-fast) !important;
+}
+.breadcrumbs a:hover {
+  color: var(--azure, #0c5b84) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   26. SURFACE REVEAL — SMOOTHER ENTRANCE
+────────────────────────────────────────────────────────────── */
+.surface {
+  transition:
+    opacity 0.65s cubic-bezier(.4,0,.2,1),
+    transform 0.65s cubic-bezier(.4,0,.2,1) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   27. DETAIL HERO — COLORED TOP BORDER
+────────────────────────────────────────────────────────────── */
+.detail-hero {
+  border-top: 4px solid transparent !important;
+  border-radius: var(--radius-card) !important;
+}
+.detail-hero.theme-azure   { border-top-color: var(--azure, #0c5b84) !important; }
+.detail-hero.theme-emerald { border-top-color: var(--emerald, #0f6b63) !important; }
+.detail-hero.theme-gold    { border-top-color: var(--gold) !important; }
+.detail-hero.theme-indigo  { border-top-color: #4f6486 !important; }
+
+/* ──────────────────────────────────────────────────────────────
+   28. SKIP LINK — BRANDED GOLD
+────────────────────────────────────────────────────────────── */
+.skip-link {
+  background: var(--gold) !important;
+  color: var(--deep, #08203a) !important;
+  font-weight: 700;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   29. FOCUS RING — AZURE
+────────────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--azure, #0c5b84);
+  outline-offset: 3px;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   30. CUSTOM SCROLLBAR
+────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar            { width: 8px; }
+::-webkit-scrollbar-track      { background: #f0f4f8; }
+::-webkit-scrollbar-thumb      { background: rgba(12,91,132,0.28); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover{ background: rgba(12,91,132,0.50); }
+
+/* ──────────────────────────────────────────────────────────────
+   31. DECORATIVE UZBEK-INSPIRED PATTERN ELEMENTS
+   (Subtle geometric accents using CSS only)
+────────────────────────────────────────────────────────────── */
+
+/* Ornamental dots pattern behind section headings */
+.section-heading {
+  position: relative;
+}
+
+/* Star-diamond bullet next to kicker text */
+.section-kicker::after,
+.hero-kicker::after,
+.card-kicker::after {
+  content: "◆";
+  font-size: 0.55em;
+  color: var(--gold);
+  opacity: 0.7;
+  display: inline-block;
+  margin-left: 2px;
+}
+
+/* Decorative geometric separator used for important sections */
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 28px;
+  opacity: 0.55;
+}
+.section-divider::before,
+.section-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.section-divider span {
+  color: var(--gold);
+  font-size: 1.1em;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   32. SCROLL-NAV (About page sidebar)
+────────────────────────────────────────────────────────────── */
+.scroll-nav a {
+  transition: color var(--t-fast), padding-left var(--t-fast) !important;
+  padding-left: 0;
+  border-left: 2px solid transparent;
+  padding: 4px 0 4px 10px;
+  border-radius: 0 4px 4px 0;
+}
+.scroll-nav a:hover {
+  color: var(--azure, #0c5b84) !important;
+  border-left-color: var(--azure, #0c5b84) !important;
+  background: rgba(12,91,132,0.05);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   33. LOCALE DROPDOWN — GOLD BORDER ON ACTIVE
+────────────────────────────────────────────────────────────── */
+.locale-dropdown__item.is-active {
+  color: var(--gold) !important;
+  background: rgba(184,150,12,0.10) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   34. PANEL INTRO (About page)
+────────────────────────────────────────────────────────────── */
+.intro-panel {
+  border-top: 4px solid var(--azure, #0c5b84) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   35. CONTACT CARD HOVER
+────────────────────────────────────────────────────────────── */
+.contact-card {
+  transition: transform var(--t-med), box-shadow var(--t-med) !important;
+  border-radius: var(--radius-card) !important;
+}
+.contact-card:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: var(--shadow-lift) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   36. SEARCH INPUT (header)
+────────────────────────────────────────────────────────────── */
+.header-nav-bar .header-search input:focus {
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 0 3px rgba(184,150,12,0.20) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   37. TOPBAR
+────────────────────────────────────────────────────────────── */
+.topbar {
+  border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+}
+.topbar-links a {
+  transition: color var(--t-fast) !important;
+}
+.topbar-links a:hover {
+  color: var(--gold-light) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   38. NUMBER COUNTER ANIMATION CLASS
+   Applied via JS to .minimal-card__value and .stat-card strong
+────────────────────────────────────────────────────────────── */
+.count-anim {
+  animation: slideInUp 0.55s cubic-bezier(.22,1,.36,1) both;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   39. INDEPENDENCE DAY PARTICLE STARS (home hero area)
+   Purely decorative CSS stars that float up subtly
+────────────────────────────────────────────────────────────── */
+.star-particle {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+  opacity: 0;
+  pointer-events: none;
+  animation: floatUp 3.5s ease-in-out infinite;
+}
+.star-particle:nth-child(1) { left: 8%;  animation-delay: 0s;    animation-duration: 3.2s; }
+.star-particle:nth-child(2) { left: 22%; animation-delay: 0.6s;  animation-duration: 4.1s; width: 4px; height: 4px; }
+.star-particle:nth-child(3) { left: 38%; animation-delay: 1.2s;  animation-duration: 3.7s; background: rgba(255,255,255,0.7); }
+.star-particle:nth-child(4) { left: 55%; animation-delay: 0.3s;  animation-duration: 4.4s; }
+.star-particle:nth-child(5) { left: 70%; animation-delay: 0.9s;  animation-duration: 3.5s; background: rgba(15,107,99,0.8); }
+.star-particle:nth-child(6) { left: 85%; animation-delay: 1.5s;  animation-duration: 3.9s; width: 3px; height: 3px; }
+
+/* ──────────────────────────────────────────────────────────────
+   40. GRADIENT HEADING for section-heading h2
+   Fallback for mobile browsers where -webkit-text-fill-color may fail
+────────────────────────────────────────────────────────────── */
+.section-heading h2 {
+  color: var(--deep, #08203a);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   41. RESPONSIVE ADJUSTMENTS
+────────────────────────────────────────────────────────────── */
+@media (max-width: 920px) {
+  /* Revert gradient text on small screens (avoid clip issues) */
+  .minimal-card__value,
+  .stat-card strong {
+    -webkit-text-fill-color: unset !important;
+    background: none !important;
+    color: var(--deep, #08203a);
+  }
+  .section-heading h2::after {
+    width: 36px;
+  }
+}
+
+@media (max-width: 640px) {
+  .minimal-action {
+    padding: 18px !important;
+  }
+  .presentation-strip__frame {
+    padding: 14px 12px 30px !important;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   42. PRINT — STRIP DECORATIONS
+────────────────────────────────────────────────────────────── */
+@media print {
+  #scroll-progress,
+  .pres-arrow,
+  .pres-dots,
+  .star-particle {
+    display: none !important;
+  }
+  .pres-slide {
+    position: relative !important;
+    opacity: 1 !important;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   43. HERO TITLE RESPONSIVE
+────────────────────────────────────────────────────────────── */
+@media (max-width: 920px) {
+  .presentation-strip__title {
+    font-size: clamp(1.4rem, 5vw, 2.4rem) !important;
+    max-width: 100% !important;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   44. PAGE HERO WITH PHOTO BACKGROUND
+────────────────────────────────────────────────────────────── */
+.page-hero--photo {
+  position: relative;
+  overflow: hidden;
+  min-height: 320px;
+  padding: 60px 0 52px !important;
+}
+
+/* Actual photo layer — only displays when --hero-photo is set */
+.page-hero__photo-layer {
+  position: absolute;
+  inset: 0;
+  background-image: var(--hero-photo, none);
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+  transform: scale(1.04);
+  transition: transform 8s ease;
+}
+.page-hero--photo:hover .page-hero__photo-layer {
+  transform: scale(1.0);
+}
+
+/* Dark gradient over the photo */
+.page-hero--photo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    112deg,
+    rgba(5, 15, 30, 0.90) 0%,
+    rgba(8, 32, 58, 0.78) 45%,
+    rgba(10, 50, 80, 0.60) 100%
+  ) !important;
+  z-index: 1;
+}
+
+/* Text sits above overlay */
+.page-hero--photo .container {
+  position: relative;
+  z-index: 2;
+}
+
+/* Override text colours for photo hero */
+.page-hero--photo .page-hero-copy h1 {
+  color: #fff !important;
+  text-shadow: 0 2px 18px rgba(0,0,0,0.6);
+}
+.page-hero--photo .page-hero-copy p {
+  color: rgba(255,255,255,0.88) !important;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.55);
+}
+.page-hero--photo .section-kicker {
+  color: var(--gold-light, #d4ae3b) !important;
+  text-shadow: none;
+}
+.page-hero--photo .section-kicker::before {
+  background: var(--gold, #b8960c) !important;
+}
+.page-hero--photo .section-kicker::after {
+  color: var(--gold, #b8960c) !important;
+}
+
+/* Bottom gradient line */
+.page-hero--photo::after {
+  z-index: 3;
+}
+
+/* Hero actions on photo bg */
+.page-hero--photo .page-hero-actions .button {
+  background: linear-gradient(135deg, var(--gold, #b8960c), #a07c10) !important;
+  color: var(--deep, #08203a) !important;
+  font-weight: 700;
+}
+
+
+
+/* ──────────────────────────────────────────────────────────────
+   44. CATEGORY IMAGE BANNER SECTION (homepage)
+────────────────────────────────────────────────────────────── */
+.cat-banner-section {
+  padding: 48px 0 56px;
+  background: #fff;
+}
+.cat-banner-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+
+/* Individual category banner card */
+.cat-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  aspect-ratio: 3 / 4;
+  cursor: pointer;
+  text-decoration: none;
+  display: block;
+  box-shadow: 0 8px 28px rgba(8, 32, 58, 0.16);
+  transition: transform var(--t-med), box-shadow var(--t-med);
+}
+.cat-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 18px 50px rgba(8, 32, 58, 0.26);
+}
+
+/* Photo layer */
+.cat-card__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s cubic-bezier(.4,0,.2,1);
+}
+.cat-card:hover .cat-card__img {
+  transform: scale(1.08);
+}
+
+/* Dark gradient overlay */
+.cat-card__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    175deg,
+    rgba(8, 32, 58, 0.05) 0%,
+    rgba(8, 32, 58, 0.40) 45%,
+    rgba(5, 15, 28, 0.88) 100%
+  );
+  transition: background 0.35s ease;
+}
+.cat-card:hover .cat-card__overlay {
+  background: linear-gradient(
+    175deg,
+    rgba(8, 32, 58, 0.10) 0%,
+    rgba(8, 32, 58, 0.52) 45%,
+    rgba(5, 15, 28, 0.92) 100%
+  );
+}
+
+/* Gold accent top bar that slides down on hover */
+.cat-card__bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--azure, #0c5b84), var(--gold, #b8960c));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+  z-index: 4;
+  border-radius: 16px 16px 0 0;
+}
+.cat-card:hover .cat-card__bar {
+  transform: scaleX(1);
+}
+
+/* Text container at card bottom */
+.cat-card__body {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 18px 16px 20px;
+  z-index: 3;
+  color: #fff;
+}
+
+/* Category icon */
+.cat-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.14);
+  border: 1px solid rgba(255,255,255,0.24);
+  margin-bottom: 10px;
+  transition: background 0.25s ease;
+  backdrop-filter: blur(4px);
+}
+.cat-card:hover .cat-card__icon {
+  background: rgba(184, 150, 12, 0.55);
+  border-color: var(--gold, #b8960c);
+}
+
+.cat-card__kicker {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold-light, #d4ae3b);
+  margin-bottom: 5px;
+}
+.cat-card__title {
+  display: block;
+  font-size: clamp(0.9rem, 1.3vw, 1.08rem);
+  font-weight: 700;
+  line-height: 1.25;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.6);
+  margin-bottom: 6px;
+}
+.cat-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: rgba(255,255,255,0.72);
+  transition: color 0.2s ease, gap 0.2s ease;
+}
+.cat-card:hover .cat-card__cta {
+  color: #fff;
+  gap: 8px;
+}
+
+/* Featured card: twice as wide */
+.cat-card--featured {
+  grid-column: span 2;
+  aspect-ratio: 16 / 11;
+}
+
+/* Documents: blue gradient background (no photo) */
+.cat-card--blue {
+  background: linear-gradient(
+    148deg,
+    #0a2d52 0%,
+    #0c5b84 55%,
+    #0a3d5c 100%
+  );
+}
+.cat-card--blue .cat-card__overlay {
+  background: linear-gradient(
+    175deg,
+    rgba(8, 32, 58, 0.15) 0%,
+    rgba(5, 20, 45, 0.55) 100%
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────
+   BUTTON GLOW & TRANSITION IMPROVEMENTS
+────────────────────────────────────────────────────────────── */
+/* All .button — persistent blue glow, stronger on hover */
+.button {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.28s ease, box-shadow 0.28s ease, background 0.28s ease !important;
+  box-shadow: 0 0 12px rgba(12, 91, 132, 0.45), 0 4px 16px rgba(8, 32, 58, 0.22) !important;
+}
+.button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 0 28px rgba(12, 91, 132, 0.80), 0 6px 24px rgba(8, 32, 58, 0.32) !important;
+}
+/* Shimmer sweep on hover */
+.button::after {
+  content: "";
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+  transition: left 0.55s ease;
+  pointer-events: none;
+}
+.button:hover::after {
+  left: 140%;
+}
+
+/* Secondary & light buttons */
+.button-secondary {
+  transition: transform 0.28s ease, box-shadow 0.28s ease, background 0.28s ease !important;
+}
+.button-secondary:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 0 18px rgba(12, 91, 132, 0.30), 0 4px 16px rgba(8, 32, 58, 0.14) !important;
+  background: rgba(255,255,255,1) !important;
+}
+
+/* Locale/nav links — subtle glow on active */
+.nav-link.is-active,
+.nav-link:hover {
+  text-shadow: 0 0 12px rgba(12, 91, 132, 0.55);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   SECTION ENTRANCE ANIMATIONS
+────────────────────────────────────────────────────────────── */
+@keyframes entranceFadeUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Apply entrance to major content blocks */
+.cat-banner-section,
+.news-grid,
+.events-grid,
+.docs-grid,
+.gallery-grid,
+.stat-row,
+.minimal-card,
+.surface,
+.page-hero {
+  animation: entranceFadeUp 0.65s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+/* Stagger cards in grids */
+.cat-card:nth-child(1) { animation-delay: 0.05s; }
+.cat-card:nth-child(2) { animation-delay: 0.12s; }
+.cat-card:nth-child(3) { animation-delay: 0.19s; }
+.cat-card:nth-child(4) { animation-delay: 0.26s; }
+.cat-card:nth-child(5) { animation-delay: 0.33s; }
+
+.minimal-card:nth-child(1) { animation-delay: 0.04s; }
+.minimal-card:nth-child(2) { animation-delay: 0.10s; }
+.minimal-card:nth-child(3) { animation-delay: 0.16s; }
+.minimal-card:nth-child(4) { animation-delay: 0.22s; }
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .cat-banner-section,
+  .news-grid, .events-grid, .docs-grid,
+  .gallery-grid, .stat-row, .minimal-card,
+  .surface, .page-hero, .cat-card {
+    animation: none !important;
+  }
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .cat-banner-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .cat-card--featured {
+    grid-column: span 2;
+    aspect-ratio: 16 / 9;
+  }
+}
+@media (max-width: 768px) {
+  .cat-banner-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .cat-card--featured {
+    grid-column: span 2;
+  }
+  .cat-card {
+    aspect-ratio: 4 / 3;
+  }
+}
+@media (max-width: 480px) {
+  .cat-banner-grid {
+    grid-template-columns: 1fr;
+  }
+  .cat-card--featured {
+    grid-column: span 1;
+  }
+}
+

@@ -1,0 +1,32 @@
+# Core dependencies used by all environments
+Django
+# API
+djangorestframework
+django-filter
+django-cors-headers
+drf-spectacular
+# Database
+psycopg[binary]
+# Config
+django-environ
+python-dotenv
+# Async tasks
+celery
+redis
+django-celery-beat
+django-celery-results
+# Serving
+gunicorn
+uvicorn
+whitenoise
+# Monitoring
+sentry-sdk
+# Files/documents
+Pillow
+python-magic
+# HTTP and crypto
+requests
+httpx
+beautifulsoup4
+cryptography
+PyJWT

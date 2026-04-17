@@ -1,0 +1,34 @@
+{
+  "publicRoutes": [
+    "/{locale}",
+    "/{locale}/about",
+    "/{locale}/about/:slug",
+    "/{locale}/news",
+    "/{locale}/news/:slug",
+    "/{locale}/events",
+    "/{locale}/events/:slug",
+    "/{locale}/documents",
+    "/{locale}/documents/:slug",
+    "/{locale}/media",
+    "/{locale}/media/photos",
+    "/{locale}/media/videos",
+    "/{locale}/media/:slug",
+    "/{locale}/contacts",
+    "/{locale}/search",
+    "/{locale}/privacy-policy",
+    "/{locale}/terms",
+    "/{locale}/accessibility",
+    "/{locale}/sitemap"
+  ],
+  "apiRoutes": [
+    "/api/revalidate",
+    "/api/contact",
+    "/api/health"
+  ],
+  "locales": [
+    "uz",
+    "ru",
+    "en"
+  ],
+  "defaultLocale": "uz"
+}
